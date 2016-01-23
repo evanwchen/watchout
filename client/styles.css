@@ -7,10 +7,22 @@ svg {
   background-color: blue;
 }
 
-circle {
-  /*fill: red;*/
-  background-image: url('asteroid.png'); 
-  background-size: 200%;
-  position: absolute;
-  height: 300px;
+.enemy {
+  transform-origin: 25px 25px;
+  -webkit-transform-origin: 50% 50%;
+  -webkit-animation: rotate 4s cubic-bezier(.49,.05,.32,1.04) infinite alternate;
+  animation: rotate 4s cubic-bezier(.49,.05,.32,1.04) infinite alternate;
+
+}
+
+@-webkit-keyframes rotate {
+  50% {
+    -webkit-transform: rotate(360deg);
+  }
+}
+
+@keyframes rotate {
+  50% {
+    transform: rotate(360deg);
+  }
 }

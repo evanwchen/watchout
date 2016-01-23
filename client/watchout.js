@@ -13,8 +13,8 @@ var score = {
 };
 
 var axes = {
-  x: d3.scale.linear().domain([0,100]).range([-25,environment.width-25]),
-  y: d3.scale.linear().domain([0,100]).range([-25,environment.height-25])
+  x: d3.scale.linear().domain([0,100]).range([0,environment.width-50]),
+  y: d3.scale.linear().domain([0,100]).range([0,environment.height-50])
 };
 
 // setup the game board
@@ -137,7 +137,7 @@ var render = function(enemyData) {
   enemies.enter()
     .append('image')
       .attr('class', 'enemy')
-      .attr('xlink:href','asteroid.png')
+      .attr('xlink:href','broccol.png')
       .attr('width',50)
       .attr('height',50)
       .attr('x', function(enemy) { return axes.x(enemy.x); })
@@ -147,8 +147,8 @@ var render = function(enemyData) {
 
   var checkCollision = function(enemy, collidedCallback) {
     var radiusSum = parseFloat(enemy.attr('width')) + player.r;
-    var xDiff = parseFloat(enemy.attr('x')) - player.x;
-    var yDiff = parseFloat(enemy.attr('y')) - player.y;
+    var xDiff = parseFloat(enemy.attr('x'))+25 - player.x;
+    var yDiff = parseFloat(enemy.attr('y'))+25 - player.y;
 
     var separation = Math.sqrt(Math.pow(xDiff, 2) + Math.pow(yDiff, 2));
     if(separation < radiusSum) {
@@ -214,6 +214,31 @@ var play = function() {
 };
 
 play();
+
+// var e = document.getElementsByClassName("enemy");
+// each(e,function(el)  {
+//   el.addEventListener("animationstart", listener, false);
+//   el.addEventListener("animationend", listener, false);
+//   el.addEventListener("animationiteration", listener, false);
+// });
+
+// e.className = "rotate";
+
+function listener(e) {
+  var l = document.createElement("li");
+  switch(e.type) {
+    case "animationstart":
+      l.innerHTML = "Started: elapsed time is " + e.elapsedTime;
+      break;
+    case "animationend":
+      l.innerHTML = "Ended: elapsed time is " + e.elapsedTime;
+      break;
+    case "animationiteration":
+      l.innerHTML = "New loop started at time " + e.elapsedTime;
+      break;
+  }
+  document.getElementById("output").appendChild(l);
+}
 
 function rangeFunction (start, stop, step) {
   if (arguments.length <= 1) {
