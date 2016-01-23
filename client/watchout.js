@@ -13,8 +13,8 @@ var score = {
 };
 
 var axes = {
-  x: d3.scale.linear().domain([0,100]).range([0,environment.width]),
-  y: d3.scale.linear().domain([0,100]).range([0,environment.height])
+  x: d3.scale.linear().domain([0,100]).range([-25,environment.width-25]),
+  y: d3.scale.linear().domain([0,100]).range([-25,environment.height-25])
 };
 
 // setup the game board
@@ -41,7 +41,7 @@ var Player = function() {
   this.fill = '#00bfff';
   this.x = 0;
   this.y = 0;
-  this.angle = 0;
+  // this.angle = 0;
   this.r = 5;
   this.path = 'm-7.5,1.62413c0,-5.04095 4.08318,-9.12413 9.12414,-9.12413c5.04096,0 9.70345,5.53145 11.87586,9.12413c-2.02759,2.72372 -6.8349,9.12415 -11.87586,9.12415c-5.04096,0 -9.12414,-4.08318 -9.12414,-9.12415z';
 };
@@ -129,24 +129,26 @@ var createEnemies = function() {
 };
 
 var render = function(enemyData) {
-  var enemies = gameBoard.selectAll('circle.enemy')
+  var enemies = gameBoard.selectAll('image.enemy')
     .data(enemyData, function(d) {
       return d.id;
     });
 
   enemies.enter()
-    .append('svg:circle')
+    .append('image')
       .attr('class', 'enemy')
-      .attr('cx', function(enemy) { return axes.x(enemy.x); })
-      .attr('cy', function(enemy) { return axes.y(enemy.y); })
-      .attr('r',0);
+      .attr('xlink:href','asteroid.png')
+      .attr('width',50)
+      .attr('height',50)
+      .attr('x', function(enemy) { return axes.x(enemy.x); })
+      .attr('y', function(enemy) { return axes.y(enemy.y); });
 
   enemies.exit().remove();
 
   var checkCollision = function(enemy, collidedCallback) {
-    var radiusSum = parseFloat(enemy.attr('r')) + player.r;
-    var xDiff = parseFloat(enemy.attr('cx')) - player.x;
-    var yDiff = parseFloat(enemy.attr('cy')) - player.y;
+    var radiusSum = parseFloat(enemy.attr('width')) + player.r;
+    var xDiff = parseFloat(enemy.attr('x')) - player.x;
+    var yDiff = parseFloat(enemy.attr('y')) - player.y;
 
     var separation = Math.sqrt(Math.pow(xDiff, 2) + Math.pow(yDiff, 2));
     if(separation < radiusSum) {
@@ -168,8 +170,8 @@ var render = function(enemyData) {
   var tweenWithCollisionDetection = function(endData) {
     var enemy = d3.select(this);
     var startPos = {
-      x: parseFloat(enemy.attr('cx')),
-      y: parseFloat(enemy.attr('cy'))
+      x: parseFloat(enemy.attr('x')),
+      y: parseFloat(enemy.attr('y'))
     };
     var endPos = {
       x: axes.x(endData.x),
@@ -184,11 +186,11 @@ var render = function(enemyData) {
         y: startPos.y + (endPos.y - startPos.y) * t
       };
 
-      enemy.attr('cx', enemyNextPos.x).attr('cy', enemyNextPos.y);
+      enemy.attr('x', enemyNextPos.x).attr('y', enemyNextPos.y);
     };
   };
 
-  enemies.transition().duration(500).attr('r', 10).transition()
+  enemies.transition().duration(500).transition()
     .duration(2000).tween('custom', tweenWithCollisionDetection);
 };
 

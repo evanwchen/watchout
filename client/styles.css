@@ -4,10 +4,13 @@
 Feel free to use it if you like. */
 
 svg {
-  background-color: black;
+  background-color: blue;
 }
 
 circle {
-  fill: red;
-  color: red;
+  /*fill: red;*/
+  background-image: url('asteroid.png'); 
+  background-size: 200%;
+  position: absolute;
+  height: 300px;
 }
