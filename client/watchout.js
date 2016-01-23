@@ -46,12 +46,12 @@ var gameBoard = d3.select('.board').append('svg:svg')
 // update current score and high score
 
 var updateCurrentScore = function() {
-  d3.select('.current').text(score.currentScore.toString());
+  d3.select('.current > span').text(score.currentScore.toString());
 };
 
 var updateHighScore = function() {
   score.highScore = Math.max(score.currentScore, score.highScore);
-  d3.select('.highscore').text(score.highScore.toString());
+  d3.select('.highscore > span').text(score.highScore.toString());
 };
 
 // create the player
@@ -71,10 +71,10 @@ Player.prototype.constructor = function(environment) {
 
 Player.prototype.render = function(to) {
   this.el = to.append('svg:path').attr('d', this.path).attr('fill', this.fill);
-  this.transform = {
-    x: this.width * 0.5,
-    y: this.height * 0.5
-  };
+  this.transform({
+    x: environment.width * 0.5,
+    y: environment.height * 0.5
+  });
   this.setupDragging();
 };
 
@@ -83,12 +83,12 @@ Player.prototype.getX = function() {
 };
 
 Player.prototype.setX = function(x) {
-  this.minX = this.environment.padding;
-  this.maxX = this.environment.width - this.environment.padding;
+  this.minX = environment.padding;
+  this.maxX = environment.width - environment.padding;
   if (x <= this.minX) {
-    x = minX;
+    x = this.minX;
   } else if (x >= this.maxX) {
-    x = maxX;
+    x = this.maxX;
   }
   this.x = x;
 };
@@ -98,12 +98,12 @@ Player.prototype.getY = function() {
 };
 
 Player.prototype.setY = function(y) {
-  this.minY = this.environment.padding;
-  this.maxY = this.environment.height - this.environment.padding;
+  this.minY = environment.padding;
+  this.maxY = environment.height - environment.padding;
   if (y <= this.minY) {
-    y = minY;
+    y = this.minY;
   } else if (y >= this.maxY) {
-    y = maxY;
+    y = this.maxY;
   }
   this.y = y;
 };
@@ -111,7 +111,7 @@ Player.prototype.setY = function(y) {
 Player.prototype.transform = function(opts) {
   this.setX(opts.x || this.x);
   this.setY(opts.y || this.y);
-  this.el.attr('transform','translate'+this.getX+","+this.getY);
+  this.el.attr('transform','translate('+this.getX()+','+this.getY()+')');
 };
 
 Player.prototype.moveAbsolute = function(x,y) {
@@ -127,7 +127,7 @@ Player.prototype.setupDragging = function() {
     this.moveRelative(d3.event.dx, d3.event.dy);
   };
 
-  var drag = d3.behavior.drag().on('drag', dragMove);
+  var drag = d3.behavior.drag().on('drag', dragMove.bind(this));
 
   this.el.call(drag);
 };
