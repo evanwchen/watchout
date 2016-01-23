@@ -1,25 +1,4 @@
-// start slingin' some d3 here.
-var rangeFunction = function (start, stop, step) {
-  if (arguments.length <= 1) {
-    stop = start || 0;
-    start = 0;
-  }
-  step = arguments[2] || 1;
-
-  var len = Math.max(Math.ceil((stop - start) / step), 0);
-  var idx = 0;
-  var range = new Array(len);
-
-  while(idx < len) {
-    range[idx++] = start;
-    start += step;
-  }
-
-  return range;
-};
-
 // setup the game environment
-
 var environment = {
   height: 450,
   width: 700,
@@ -29,7 +8,8 @@ var environment = {
 
 var score = {
   currentScore: 0,
-  highScore: 0
+  highScore: 0,
+  collisions: 0
 };
 
 var axes = {
@@ -38,13 +18,11 @@ var axes = {
 };
 
 // setup the game board
-
 var gameBoard = d3.select('.board').append('svg:svg')
   .attr('width', environment.width).attr('height', environment.height);
 
 
 // update current score and high score
-
 var updateCurrentScore = function() {
   d3.select('.current > span').text(score.currentScore.toString());
 };
@@ -54,8 +32,11 @@ var updateHighScore = function() {
   d3.select('.highscore > span').text(score.highScore.toString());
 };
 
-// create the player
+var updateCollisions = function() {
+  d3.select('.collisions > span').text(score.collisions.toString());
+};
 
+// create the player
 var Player = function() {
   this.fill = '#00bfff';
   this.x = 0;
@@ -132,10 +113,9 @@ Player.prototype.setupDragging = function() {
   this.el.call(drag);
 };
 
-var players = [];
+// create player and render on gameBoard
 var player = new Player(environment);
 
-players.push(player);
 player.render(gameBoard);
 
 var createEnemies = function() {
@@ -163,43 +143,29 @@ var render = function(enemyData) {
 
   enemies.exit().remove();
 
-
-  var each = function(obj, iterator, context) {
-    if (obj === null) return;
-    if (obj.length === +obj.length) {
-      for (var i = 0, l = obj.length; i < l; i++) {
-        iterator.call(context, obj[i], i, obj);
-      }
-    } else {
-      for (var key in obj) {
-        if (obj.hasOwnProperty(key)) {
-          iterator.call(context, obj[key], key, obj);
-        }
-      }
-    }
-  };
-
   var checkCollision = function(enemy, collidedCallback) {
-    each(players, function(player) {
-      var radiusSum = parseFloat(enemy.attr('r')) + player.r;
-      var xDiff = parseFloat(enemy.attr('cx')) - player.x;
-      var yDiff = parseFloat(enemy.attr('cy')) - player.y;
+    var radiusSum = parseFloat(enemy.attr('r')) + player.r;
+    var xDiff = parseFloat(enemy.attr('cx')) - player.x;
+    var yDiff = parseFloat(enemy.attr('cy')) - player.y;
 
-      var separation = Math.sqrt(Math.pow(xDiff, 2) + Math.pow(yDiff, 2));
-      if(separation < radiusSum) {
-        collidedCallback(player, enemy);
-      }
-    });
+    var separation = Math.sqrt(Math.pow(xDiff, 2) + Math.pow(yDiff, 2));
+    if(separation < radiusSum) {
+      collidedCallback(player, enemy);
+    }
   };
 
   var onCollision = function() {
     updateHighScore();
     score.currentScore = 0;
     updateCurrentScore();
+    if (player.count === 0) {
+      score.collisions++;
+      updateCollisions();
+      player.count++;
+    }
   };
 
   var tweenWithCollisionDetection = function(endData) {
-
     var enemy = d3.select(this);
     var startPos = {
       x: parseFloat(enemy.attr('cx')),
@@ -229,6 +195,7 @@ var render = function(enemyData) {
 var play = function() {
   var gameTurn = function() {
     var newEnemyPositions = createEnemies();
+    player.count = 0;
     render(newEnemyPositions);
   };
 
@@ -246,12 +213,39 @@ var play = function() {
 
 play();
 
+function rangeFunction (start, stop, step) {
+  if (arguments.length <= 1) {
+    stop = start || 0;
+    start = 0;
+  }
+  step = arguments[2] || 1;
 
+  var len = Math.max(Math.ceil((stop - start) / step), 0);
+  var idx = 0;
+  var range = new Array(len);
 
+  while(idx < len) {
+    range[idx++] = start;
+    start += step;
+  }
 
+  return range;
+}
 
-
-
+function each(obj, iterator, context) {
+  if (obj === null) return;
+  if (obj.length === +obj.length) {
+    for (var i = 0, l = obj.length; i < l; i++) {
+      iterator.call(context, obj[i], i, obj);
+    }
+  } else {
+    for (var key in obj) {
+      if (obj.hasOwnProperty(key)) {
+        iterator.call(context, obj[key], key, obj);
+      }
+    }
+  }
+}
 
 
 
