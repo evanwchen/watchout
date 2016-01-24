@@ -4,7 +4,9 @@
 Feel free to use it if you like. */
 
 svg {
-  background-color: blue;
+  background-image: url('http://content.mycutegraphics.com/backgrounds/baby/bb21.gif');
+  border: 2px solid rgb(117,137,191);
+  margin-top: 10px
 }
 
 .enemy {
@@ -12,7 +14,6 @@ svg {
   -webkit-transform-origin: 50% 50%;
   -webkit-animation: rotate 4s cubic-bezier(.49,.05,.32,1.04) infinite alternate;
   animation: rotate 4s cubic-bezier(.49,.05,.32,1.04) infinite alternate;
-
 }
 
 @-webkit-keyframes rotate {
@@ -25,4 +26,16 @@ svg {
   50% {
     transform: rotate(360deg);
   }
+}
+
+.scoreboard {
+  font-family: sans-serif;
+  font-size: 16px;
+  display: inline;
+  color: rgb(165,137,193);
+}
+
+.highscore, .current, .collisions {
+  padding-right: 20px;
+
 }

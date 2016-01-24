@@ -38,12 +38,10 @@ var updateCollisions = function() {
 
 // create the player
 var Player = function() {
-  this.fill = '#00bfff';
   this.x = 0;
   this.y = 0;
-  // this.angle = 0;
-  this.r = 5;
-  this.path = 'm-7.5,1.62413c0,-5.04095 4.08318,-9.12413 9.12414,-9.12413c5.04096,0 9.70345,5.53145 11.87586,9.12413c-2.02759,2.72372 -6.8349,9.12415 -11.87586,9.12415c-5.04096,0 -9.12414,-4.08318 -9.12414,-9.12415z';
+  this.width = 50;
+  this.height = 50;
 };
 
 Player.prototype.constructor = function(environment) {
@@ -51,10 +49,23 @@ Player.prototype.constructor = function(environment) {
 };
 
 Player.prototype.render = function(to) {
-  this.el = to.append('svg:path').attr('d', this.path).attr('fill', this.fill);
+  gameBoard.selectAll('image.player')
+    .data([{
+      x: Math.random()*100,
+      y: Math.random()*100
+    }]);
+  
+  this.el = to.append('image')
+    .attr('class', 'player')
+    .attr('xlink:href','baby.png')
+    .attr('width',50)
+    .attr('height',50)
+    .attr('x', axes.x(player.x))
+    .attr('y', axes.y(player.y));
+
   this.transform({
-    x: environment.width * 0.5,
-    y: environment.height * 0.5
+    x: environment.width * 0.5 - 25,
+    y: environment.height * 0.5 - 25
   });
   this.setupDragging();
 };
@@ -137,7 +148,7 @@ var render = function(enemyData) {
   enemies.enter()
     .append('image')
       .attr('class', 'enemy')
-      .attr('xlink:href','broccol.png')
+      .attr('xlink:href','broccoli.png')
       .attr('width',50)
       .attr('height',50)
       .attr('x', function(enemy) { return axes.x(enemy.x); })
@@ -146,7 +157,7 @@ var render = function(enemyData) {
   enemies.exit().remove();
 
   var checkCollision = function(enemy, collidedCallback) {
-    var radiusSum = parseFloat(enemy.attr('width')) + player.r;
+    var radiusSum = parseFloat(enemy.attr('width')) + player.width;
     var xDiff = parseFloat(enemy.attr('x'))+25 - player.x;
     var yDiff = parseFloat(enemy.attr('y'))+25 - player.y;
 
@@ -214,31 +225,6 @@ var play = function() {
 };
 
 play();
-
-// var e = document.getElementsByClassName("enemy");
-// each(e,function(el)  {
-//   el.addEventListener("animationstart", listener, false);
-//   el.addEventListener("animationend", listener, false);
-//   el.addEventListener("animationiteration", listener, false);
-// });
-
-// e.className = "rotate";
-
-function listener(e) {
-  var l = document.createElement("li");
-  switch(e.type) {
-    case "animationstart":
-      l.innerHTML = "Started: elapsed time is " + e.elapsedTime;
-      break;
-    case "animationend":
-      l.innerHTML = "Ended: elapsed time is " + e.elapsedTime;
-      break;
-    case "animationiteration":
-      l.innerHTML = "New loop started at time " + e.elapsedTime;
-      break;
-  }
-  document.getElementById("output").appendChild(l);
-}
 
 function rangeFunction (start, stop, step) {
   if (arguments.length <= 1) {
